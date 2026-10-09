@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Expense Tracker</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <header>
+        <div class="brand">
+            <h1>💰 Expense Tracker</h1>
+            <p>Manage Your Income and Expenses Easily</p>
+        </div>
+
+        <div class="nav-actions">
+            <button id="showLoginBtn" class="nav-btn active">Login</button>
+            <button id="showSignupBtn" class="nav-btn">Sign Up</button>
+            <button id="showAdminLoginBtn" class="nav-btn">Admin</button>
+
+            <div id="userMenu" class="user-menu hidden">
+                <button id="profileToggle" class="profile-btn">Profile</button>
+                <div id="profilePanel" class="profile-panel hidden">
+                    <h3>My Profile</h3>
+                    <div class="profile-info">
+                        <p><strong>Name:</strong> <span id="profileName"></span></p>
+                        <p><strong>Email:</strong> <span id="profileEmail"></span></p>
+                        <p><strong>Username:</strong> <span id="profileUsername"></span></p>
+                        <p><strong>Phone:</strong> <span id="profilePhone"></span></p>
+                        <p><strong>Joined:</strong> <span id="profileJoined"></span></p>
+                    </div>
+                    <button id="logoutBtn" class="logout-btn">Logout</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <section id="authScreen" class="auth-section">
+            <div class="auth-card">
+                <div id="loginFormWrap" class="form-panel active">
+                    <h2>Login</h2>
+                    <form id="loginForm" class="auth-form">
+                        <input type="email" id="loginEmail" placeholder="Email" required />
+                        <input type="password" id="loginPassword" placeholder="Password" required />
+                        <button type="submit">Login</button>
+                    </form>
+                    <button type="button" class="forgot-link link-btn" data-mode="reset">Forgot Password?</button>
+                    <p class="switch-text">
+                        Don’t have an account?
+                        <button type="button" class="link-btn" data-mode="signup">Sign up</button>
+                    </p>
+                </div>
+
+                <div id="signupFormWrap" class="form-panel">
+                    <h2>Create Account</h2>
+                    <form id="signupForm" class="auth-form">
+                        <input type="text" id="signupName" placeholder="Full Name" required />
+                        <input type="text" id="signupUsername" placeholder="Username" required />
+                        <input type="email" id="signupEmail" placeholder="Email" required />
+                        <input type="tel" id="signupPhone" placeholder="Phone Number" required />
+                        <input type="password" id="signupPassword" placeholder="Password" required />
+                        <button type="submit">Sign Up</button>
+                    </form>
+                    <p class="switch-text">
+                        Already have an account?
+                        <button type="button" class="link-btn" data-mode="login">Login</button>
+                    </p>
+                </div>
+
+                <div id="resetFormWrap" class="form-panel">
+                    <h2>Reset Password</h2>
+                    <form id="resetForm" class="auth-form">
+                        <input type="email" id="resetEmail" placeholder="Email" required />
+                        <input type="password" id="resetPassword" placeholder="New Password" required />
+                        <button type="submit">Update Password</button>
+                    </form>
+                    <p class="switch-text">
+                        Remembered your password?
+                        <button type="button" class="link-btn" data-mode="login">Login</button>
+                    </p>
+                </div>
+
+                <div id="adminLoginFormWrap" class="form-panel">
+                    <h2>Administrator Login</h2>
+                    <form id="adminLoginForm" class="auth-form">
+                        <input type="email" id="adminLoginEmail" placeholder="Admin email" required />
+                        <input type="password" id="adminLoginPassword" placeholder="Admin password" required />
+                        <button type="submit">Sign In as Admin</button>
+                    </form>
+                    <p class="demo-credentials">
+                        Demo access: <strong>admin@expensetracker.com</strong> / <strong>admin123</strong>
+                    </p>
+                    <p class="security-note">
+                        Demo only: this browser-based app does not provide secure server-side authentication.
+                    </p>
+                    <p class="switch-text">
+                        <button type="button" class="link-btn" data-mode="login">Back to user login</button>
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section id="appScreen" class="hidden">
+            <div id="userAppShell" class="app-shell">
+                <aside class="sidebar">
+                    <h3>Menu</h3>
+                    <nav class="sidebar-nav">
+                        <button class="sidebar-btn active" data-section="dashboard">Dashboard</button>
+                        <button class="sidebar-btn" data-section="income">Income</button>
+                        <button class="sidebar-btn" data-section="expense">Expense</button>
+                        <button class="sidebar-btn" data-section="transfers">Transfers</button>
+                        <button class="sidebar-btn" data-section="history">Transaction History</button>
+                        <button class="sidebar-btn" data-section="savings">Savings</button>
+                        <button class="sidebar-btn" data-section="budgets">Budgets</button>
+                        <button class="sidebar-btn" data-section="reports">Reports</button>
+                    </nav>
+                </aside>
+
+                <main class="main-content">
+                    <div class="welcome-bar">
+                        <h2>Welcome, <span id="welcomeName">User</span></h2>
+                    </div>
+
+                    <div id="section-dashboard" class="content-section">
+                        <div class="balance-section">
+                            <div class="card">
+                                <h3>Total Income</h3>
+                                <h2 class="income" id="totalIncome">₹0</h2>
+                            </div>
+
+                            <div class="card">
+                                <h3>Total Expense</h3>
+                                <h2 class="expense" id="totalExpense">₹0</h2>
+                            </div>
+
+                            <div class="card">
+                                <h3>Balance</h3>
+                                <h2 class="balance" id="balance">₹0</h2>
+                            </div>
+                        </div>
+
+                        <div class="dashboard-charts">
+                            <section class="chart-card" aria-labelledby="monthlyChartTitle">
+                                <div class="chart-heading">
+                                    <div>
+                                        <h2 id="monthlyChartTitle">Monthly spending &amp; savings</h2>
+                                        <p>Expenses compared with income left after expenses</p>
+                                    </div>
+                                    <div class="chart-legend" aria-label="Chart legend">
+                                        <span><i class="legend-dot spending-dot"></i>Spending</span>
+                                        <span><i class="legend-dot savings-dot"></i>Saving</span>
+                                    </div>
+                                </div>
+                                <div class="chart-scroll">
+                                    <svg id="monthlyFinanceChart" class="monthly-finance-chart" viewBox="0 0 640 300" role="img" aria-label="Monthly spending and savings chart"></svg>
+                                </div>
+                            </section>
+
+                            <section class="chart-card" aria-labelledby="monthlyBreakdownTitle">
+                                <div class="chart-heading">
+                                    <div>
+                                        <h2 id="monthlyBreakdownTitle">This month’s spending</h2>
+                                        <p>Expense breakdown by category</p>
+                                    </div>
+                                </div>
+                                <div class="breakdown-content">
+                                    <svg id="expenseBreakdownChart" class="expense-breakdown-chart" viewBox="0 0 240 240" role="img" aria-label="This month’s expense breakdown by category"></svg>
+                                    <div id="expenseBreakdownLegend" class="breakdown-legend"></div>
+                                </div>
+                            </section>
+                        </div>
+
+                        <div class="form-section">
+                            <h2>Add Transaction</h2>
+                            <div class="form-grid">
+                                <input type="text" id="description" placeholder="Description" />
+                                <input type="number" id="amount" placeholder="Amount" />
+
+                                <select id="type">
+                                    <option value="income">Income</option>
+                                    <option value="expense">Expense</option>
+                                </select>
+
+                                <select id="category">
+                                    <option value="Salary">Salary</option>
+                                    <option value="Food">Food</option>
+                                    <option value="Travel">Travel</option>
+                                    <option value="Shopping">Shopping</option>
+                                    <option value="Education">Education</option>
+                                    <option value="Entertainment">Entertainment</option>
+                                    <option value="Bills">Bills</option>
+                                    <option value="Other">Other</option>
+                                </select>
+
+                                <input type="date" id="date" />
+                            </div>
+
+                            <button class="add-btn" onclick="addTransaction()">+ Add Transaction</button>
+                        </div>
+                    </div>
+
+                    <div id="section-income" class="content-section hidden">
+                        <div class="panel-box">
+                            <h2>Income Overview</h2>
+                            <div class="summary-grid">
+                                <div class="card">
+                                    <h3>Income This Month</h3>
+                                    <h2 class="income" id="incomeSummary">₹0</h2>
+                                </div>
+                                <div class="card">
+                                    <h3>Average Income</h3>
+                                    <h2 class="income" id="averageIncome">₹0</h2>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="panel-box">
+                            <h2>Add Income</h2>
+                            <div class="form-grid">
+                                <input type="text" id="incomeLabel" placeholder="Income Source" />
+                                <input type="number" id="incomeAmount" placeholder="Amount" />
+                                <input type="date" id="incomeDate" />
+                            </div>
+                            <button class="add-btn" onclick="addIncomeEntry()">Save Income</button>
+                        </div>
+
+                        <div class="panel-box">
+                            <h2>Income Entries</h2>
+                            <div class="table-wrap">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Source</th>
+                                            <th>Amount</th>
+                                            <th>Date</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="incomeList"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="section-expense" class="content-section hidden">
+                        <div class="panel-box">
+                            <h2>Expense Overview</h2>
+                            <div class="summary-grid">
+                                <div class="card">
+                                    <h3>Expense This Month</h3>
+                                    <h2 class="expense" id="expenseSummary">₹0</h2>
+                                </div>
+                                <div class="card">
+                                    <h3>Top Category</h3>
+                                    <h2 class="expense" id="topExpenseCategory">-</h2>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="panel-box">
+                            <h2>Add Expense</h2>
+                            <div class="form-grid">
+                                <input type="text" id="expenseLabel" placeholder="Expense Description" />
+                                <input type="number" id="expenseAmount" placeholder="Amount" />
+                                <select id="expenseCategory">
+                                    <option value="Food">Food</option>
+                                    <option value="Travel">Travel</option>
+                                    <option value="Shopping">Shopping</option>
+                                    <option value="Bills">Bills</option>
+                                    <option value="Education">Education</option>
+                                    <option value="Entertainment">Entertainment</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                                <input type="date" id="expenseDate" />
+                            </div>
+                            <button class="add-btn" onclick="addExpenseEntry()">Save Expense</button>
+                        </div>
+
+                        <div class="panel-box">
+                            <h2>Expense Entries</h2>
+                            <div class="table-wrap">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Description</th>
+                                            <th>Category</th>
+                                            <th>Amount</th>
+                                            <th>Date</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="expenseList"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="section-transfers" class="content-section hidden">
+                        <div class="panel-box">
+                            <h2>Transfer Center</h2>
+                            <div class="form-grid">
+                                <input type="text" id="transferFrom" placeholder="From Account" value="Main Account" />
+                                <input type="text" id="transferTo" placeholder="To Account" value="Savings" />
+                                <input type="number" id="transferAmount" placeholder="Amount" />
+                                <input type="date" id="transferDate" />
+                            </div>
+                            <button class="add-btn" onclick="addTransfer()">Transfer Now</button>
+                        </div>
+
+                        <div class="panel-box">
+                            <h2>Recent Transfers</h2>
+                            <div class="table-wrap">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>From</th>
+                                            <th>To</th>
+                                            <th>Amount</th>
+                                            <th>Date</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="transferList"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="section-history" class="content-section hidden">
+                        <div class="transaction-section">
+                            <h2>Transaction History</h2>
+                            <div class="table-wrap">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Description</th>
+                                            <th>Category</th>
+                                            <th>Type</th>
+                                            <th>Amount</th>
+                                            <th>Date</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="transactionList"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="section-savings" class="content-section hidden">
+                        <div class="panel-box">
+                            <h2>Savings Goals</h2>
+                            <div class="form-grid">
+                                <input type="text" id="savingName" placeholder="Goal Name" />
+                                <input type="number" id="savingTarget" placeholder="Target Amount" />
+                                <input type="number" id="savingCurrent" placeholder="Current Saved" />
+                            </div>
+                            <button class="add-btn" onclick="addSavingsGoal()">Add Goal</button>
+                        </div>
+
+                        <div class="panel-box">
+                            <h2>Active Savings</h2>
+                            <div id="savingsList"></div>
+                        </div>
+                    </div>
+
+                    <div id="section-budgets" class="content-section hidden">
+                        <div class="panel-box">
+                            <h2>Budgets</h2>
+                            <div class="form-grid">
+                                <select id="budgetCategory">
+                                    <option value="Food">Food</option>
+                                    <option value="Travel">Travel</option>
+                                    <option value="Shopping">Shopping</option>
+                                    <option value="Bills">Bills</option>
+                                    <option value="Education">Education</option>
+                                    <option value="Entertainment">Entertainment</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                                <input type="number" id="budgetLimit" placeholder="Monthly Limit" />
+                            </div>
+                            <button class="add-btn" onclick="addBudget()">Add Budget</button>
+                        </div>
+
+                        <div class="panel-box">
+                            <h2>Budget Progress</h2>
+                            <div id="budgetList"></div>
+                        </div>
+                    </div>
+
+                    <div id="section-reports" class="content-section hidden">
+                        <div class="summary-grid">
+                            <div class="card">
+                                <h3>Net Balance</h3>
+                                <h2 class="balance" id="netBalanceReport">₹0</h2>
+                            </div>
+                            <div class="card">
+                                <h3>Monthly Savings</h3>
+                                <h2 class="income" id="monthlySavingsReport">₹0</h2>
+                            </div>
+                        </div>
+
+                        <div class="stats-list">
+                            <div class="mini-card">
+                                <h4>Income</h4>
+                                <p id="reportIncomeValue">₹0</p>
+                            </div>
+                            <div class="mini-card">
+                                <h4>Expense</h4>
+                                <p id="reportExpenseValue">₹0</p>
+                            </div>
+                            <div class="mini-card">
+                                <h4>Transfers</h4>
+                                <p id="reportTransferValue">₹0</p>
+                            </div>
+                            <div class="mini-card">
+                                <h4>Saved Goals</h4>
+                                <p id="reportSavingsValue">₹0</p>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+
+            <section id="adminScreen" class="admin-screen hidden">
+                <div class="admin-welcome">
+                    <div>
+                        <p class="eyebrow">ADMINISTRATION</p>
+                        <h2>Welcome, <span id="adminWelcomeName">Admin</span></h2>
+                        <p>Manage registered accounts and review basic account details.</p>
+                    </div>
+                </div>
+
+                <div class="admin-stats">
+                    <article class="admin-stat-card">
+                        <span>Registered users</span>
+                        <strong id="adminUserCount">0</strong>
+                    </article>
+                    <article class="admin-stat-card">
+                        <span>Registered today</span>
+                        <strong id="adminTodayCount">0</strong>
+                    </article>
+                    <article class="admin-stat-card">
+                        <span>Newest registration</span>
+                        <strong id="adminLatestRegistration">-</strong>
+                    </article>
+                </div>
+
+                <div class="admin-content-grid">
+                    <section class="panel-box admin-form-panel">
+                        <h2 id="adminFormTitle">Create user</h2>
+                        <form id="adminUserForm" class="admin-user-form">
+                            <label for="adminUserName">Full name</label>
+                            <input type="text" id="adminUserName" required />
+                            <label for="adminUserUsername">Username</label>
+                            <input type="text" id="adminUserUsername" required />
+                            <label for="adminUserEmail">Email</label>
+                            <input type="email" id="adminUserEmail" required />
+                            <label for="adminUserPhone">Phone</label>
+                            <input type="tel" id="adminUserPhone" required />
+                            <div id="adminPasswordField" class="admin-password-field">
+                                <label for="adminUserPassword">Password</label>
+                                <input type="password" id="adminUserPassword" minlength="1" required />
+                                <small id="adminPasswordHelp">Set an initial password for the new account.</small>
+                            </div>
+                            <div class="admin-form-actions">
+                                <button type="submit" class="add-btn" id="adminSaveUserBtn">Create user</button>
+                                <button type="button" class="secondary-btn hidden" id="adminCancelEditBtn">Cancel</button>
+                            </div>
+                        </form>
+                        <p class="security-note">
+                            Passwords are never displayed or editable from the user management dashboard.
+                        </p>
+                    </section>
+
+                    <section class="panel-box admin-users-panel">
+                        <div class="admin-users-heading">
+                            <div>
+                                <h2>User accounts</h2>
+                                <p>Contact and registration details only; no passwords or financial data.</p>
+                            </div>
+                            <input type="search" id="adminUserSearch" placeholder="Search users" aria-label="Search users" />
+                        </div>
+                        <div class="table-wrap">
+                            <table class="admin-users-table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Username</th>
+                                        <th>Email</th>
+                                        <th>Phone</th>
+                                        <th>Registered</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adminUserList"></tbody>
+                            </table>
+                        </div>
+                    </section>
+                </div>
+            </section>
+        </section>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

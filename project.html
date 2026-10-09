@@ -1,0 +1,1525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Expense Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f4f6f9;
+            min-height: 100vh;
+            color: #2c3e50;
+        }
+
+        header {
+            background: #2c3e50;
+            color: white;
+            padding: 18px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .brand h1 {
+            font-size: 2rem;
+            margin-bottom: 4px;
+        }
+
+        .brand p {
+            opacity: 0.85;
+            font-size: 0.95rem;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-btn,
+        .profile-btn,
+        .auth-btn,
+        .logout-btn,
+        .link-btn,
+        .add-btn,
+        .delete-btn {
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s ease;
+        }
+
+        .nav-btn,
+        .profile-btn,
+        .auth-btn,
+        .logout-btn {
+            background: rgba(255,255,255,0.12);
+            color: white;
+            padding: 10px 16px;
+        }
+
+        .nav-btn.active,
+        .profile-btn {
+            background: #fff;
+            color: #2c3e50;
+        }
+
+        .user-menu {
+            position: relative;
+        }
+
+        .profile-panel {
+            position: absolute;
+            right: 0;
+            top: 52px;
+            width: 300px;
+            background: white;
+            color: #2c3e50;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.18);
+            padding: 20px;
+            z-index: 5;
+        }
+
+        .profile-panel h3 {
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+
+        .profile-info {
+            display: grid;
+            gap: 10px;
+            margin-bottom: 18px;
+            font-size: 0.96rem;
+        }
+
+        .profile-info p {
+            border-bottom: 1px solid #eef2f7;
+            padding-bottom: 8px;
+        }
+
+        .logout-btn {
+            background: #e74c3c;
+            width: 100%;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1100px;
+            margin: 30px auto;
+        }
+
+        .app-shell {
+            display: flex;
+            min-height: calc(100vh - 110px);
+            background: #f4f6f9;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: #203041;
+            color: white;
+            padding: 25px 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .sidebar h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: #dfeaf7;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .sidebar-btn {
+            background: rgba(255,255,255,0.08);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 12px 14px;
+            text-align: left;
+            font-size: 0.96rem;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .sidebar-btn.active,
+        .sidebar-btn:hover {
+            background: #2d4d68;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 25px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .auth-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 70vh;
+        }
+
+        .auth-card {
+            width: min(100%, 480px);
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .form-panel {
+            display: none;
+            padding: 30px 25px;
+        }
+
+        .form-panel.active {
+            display: block;
+        }
+
+        .form-panel h2 {
+            margin-bottom: 20px;
+            text-align: center;
+            color: #2c3e50;
+        }
+
+        .auth-form {
+            display: grid;
+            gap: 15px;
+        }
+
+        .auth-form input,
+        .auth-form select,
+        .form-grid input,
+        .form-grid select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #d7dfe8;
+            border-radius: 8px;
+            font-size: 16px;
+            background: #f9fbfd;
+        }
+
+        .auth-form button,
+        .add-btn,
+        .delete-btn {
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .auth-form button,
+        .add-btn {
+            background: #2980b9;
+            color: white;
+        }
+
+        .auth-form button:hover,
+        .add-btn:hover {
+            background: #1f6690;
+        }
+
+        .switch-text {
+            margin-top: 18px;
+            text-align: center;
+            color: #555;
+            font-size: 0.95rem;
+        }
+
+        .forgot-link {
+            display: block;
+            margin: 10px 0 0;
+            text-align: right;
+            color: #2980b9;
+            font-size: 0.92rem;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .link-btn {
+            background: transparent;
+            color: #2980b9;
+            border: none;
+            font-size: 0.95rem;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .welcome-bar {
+            margin-bottom: 22px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            border-radius: 12px;
+            padding: 18px 22px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+        }
+
+        .welcome-bar h2 {
+            color: #2c3e50;
+        }
+
+        .app-shell {
+            display: flex;
+            min-height: calc(100vh - 110px);
+            background: #f4f6f9;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: #203041;
+            color: white;
+            padding: 25px 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .sidebar h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: #dfeaf7;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .sidebar-btn {
+            background: rgba(255,255,255,0.08);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 12px 14px;
+            text-align: left;
+            font-size: 0.96rem;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .sidebar-btn.active,
+        .sidebar-btn:hover {
+            background: #2d4d68;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 25px;
+        }
+
+        .content-section {
+            display: block;
+        }
+
+        .balance-section {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .card h3 {
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        .income {
+            color: green;
+        }
+
+        .expense {
+            color: red;
+        }
+
+        .balance {
+            color: #2980b9;
+        }
+
+        .form-section,
+        .transaction-section,
+        .panel-box {
+            background: white;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .add-btn {
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        .inline-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background: #2c3e50;
+            color: white;
+        }
+
+        .delete-btn {
+            background: #e74c3c;
+            color: white;
+            padding: 8px 12px;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .income-row {
+            color: green;
+            font-weight: bold;
+        }
+
+        .expense-row {
+            color: red;
+            font-weight: bold;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .progress-box {
+            margin-top: 12px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #edf2f7;
+            border-radius: 999px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 999px;
+            background: linear-gradient(90deg, #2ecc71, #27ae60);
+        }
+
+        .stats-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .mini-card {
+            background: #f8fafc;
+            padding: 18px;
+            border-radius: 10px;
+            border: 1px solid #e3ebf3;
+        }
+
+        .mini-card h4 {
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+            color: #52657b;
+        }
+
+        .mini-card p {
+            font-size: 1.4rem;
+            font-weight: bold;
+        }
+
+        @media (max-width: 700px) {
+            header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .nav-actions {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .app-shell {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+            }
+
+            .balance-section,
+            .form-grid,
+            .summary-grid,
+            .stats-list {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            th,
+            td {
+                padding: 8px 4px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="brand">
+            <h1>💰 Expense Tracker</h1>
+            <p>Manage Your Income and Expenses Easily</p>
+        </div>
+
+        <div class="nav-actions">
+            <button id="showLoginBtn" class="nav-btn active">Login</button>
+            <button id="showSignupBtn" class="nav-btn">Sign Up</button>
+
+            <div id="userMenu" class="user-menu hidden">
+                <button id="profileToggle" class="profile-btn">Profile</button>
+                <div id="profilePanel" class="profile-panel hidden">
+                    <h3>My Profile</h3>
+                    <div class="profile-info">
+                        <p><strong>Name:</strong> <span id="profileName"></span></p>
+                        <p><strong>Email:</strong> <span id="profileEmail"></span></p>
+                        <p><strong>Username:</strong> <span id="profileUsername"></span></p>
+                        <p><strong>Phone:</strong> <span id="profilePhone"></span></p>
+                        <p><strong>Joined:</strong> <span id="profileJoined"></span></p>
+                    </div>
+                    <button id="logoutBtn" class="logout-btn">Logout</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <section id="authScreen" class="auth-section">
+            <div class="auth-card">
+                <div id="loginFormWrap" class="form-panel active">
+                    <h2>Login</h2>
+                    <form id="loginForm" class="auth-form">
+                        <input type="email" id="loginEmail" placeholder="Email" required />
+                        <input type="password" id="loginPassword" placeholder="Password" required />
+                        <button type="submit">Login</button>
+                    </form>
+                    <button type="button" class="forgot-link link-btn" data-mode="reset">Forgot Password?</button>
+                    <p class="switch-text">
+                        Don’t have an account?
+                        <button type="button" class="link-btn" data-mode="signup">Sign up</button>
+                    </p>
+                </div>
+
+                <div id="signupFormWrap" class="form-panel">
+                    <h2>Create Account</h2>
+                    <form id="signupForm" class="auth-form">
+                        <input type="text" id="signupName" placeholder="Full Name" required />
+                        <input type="text" id="signupUsername" placeholder="Username" required />
+                        <input type="email" id="signupEmail" placeholder="Email" required />
+                        <input type="tel" id="signupPhone" placeholder="Phone Number" required />
+                        <input type="password" id="signupPassword" placeholder="Password" required />
+                        <button type="submit">Sign Up</button>
+                    </form>
+                    <p class="switch-text">
+                        Already have an account?
+                        <button type="button" class="link-btn" data-mode="login">Login</button>
+                    </p>
+                </div>
+
+                <div id="resetFormWrap" class="form-panel">
+                    <h2>Reset Password</h2>
+                    <form id="resetForm" class="auth-form">
+                        <input type="email" id="resetEmail" placeholder="Email" required />
+                        <input type="password" id="resetPassword" placeholder="New Password" required />
+                        <button type="submit">Update Password</button>
+                    </form>
+                    <p class="switch-text">
+                        Remembered your password?
+                        <button type="button" class="link-btn" data-mode="login">Login</button>
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section id="appScreen" class="hidden">
+            <div class="app-shell">
+                <aside class="sidebar">
+                    <h3>Menu</h3>
+                    <nav class="sidebar-nav">
+                        <button class="sidebar-btn active" data-section="dashboard">Dashboard</button>
+                        <button class="sidebar-btn" data-section="income">Income</button>
+                        <button class="sidebar-btn" data-section="expense">Expense</button>
+                        <button class="sidebar-btn" data-section="transfers">Transfers</button>
+                        <button class="sidebar-btn" data-section="history">Transaction History</button>
+                        <button class="sidebar-btn" data-section="savings">Savings</button>
+                        <button class="sidebar-btn" data-section="budgets">Budgets</button>
+                        <button class="sidebar-btn" data-section="reports">Reports</button>
+                    </nav>
+                </aside>
+
+                <main class="main-content">
+                    <div class="welcome-bar">
+                        <h2>Welcome, <span id="welcomeName">User</span></h2>
+                    </div>
+
+                    <div id="section-dashboard" class="content-section">
+                        <div class="balance-section">
+                            <div class="card">
+                                <h3>Total Income</h3>
+                                <h2 class="income" id="totalIncome">₹0</h2>
+                            </div>
+
+                            <div class="card">
+                                <h3>Total Expense</h3>
+                                <h2 class="expense" id="totalExpense">₹0</h2>
+                            </div>
+
+                            <div class="card">
+                                <h3>Balance</h3>
+                                <h2 class="balance" id="balance">₹0</h2>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <h2>Add Transaction</h2>
+                            <div class="form-grid">
+                                <input type="text" id="description" placeholder="Description" />
+                                <input type="number" id="amount" placeholder="Amount" />
+
+                                <select id="type">
+                                    <option value="income">Income</option>
+                                    <option value="expense">Expense</option>
+                                </select>
+
+                                <select id="category">
+                                    <option value="Salary">Salary</option>
+                                    <option value="Food">Food</option>
+                                    <option value="Travel">Travel</option>
+                                    <option value="Shopping">Shopping</option>
+                                    <option value="Education">Education</option>
+                                    <option value="Entertainment">Entertainment</option>
+                                    <option value="Bills">Bills</option>
+                                    <option value="Other">Other</option>
+                                </select>
+
+                                <input type="date" id="date" />
+                            </div>
+
+                            <button class="add-btn" onclick="addTransaction()">+ Add Transaction</button>
+                        </div>
+                    </div>
+
+                    <div id="section-income" class="content-section hidden">
+                        <div class="panel-box">
+                            <h2>Income Overview</h2>
+                            <div class="summary-grid">
+                                <div class="card">
+                                    <h3>Income This Month</h3>
+                                    <h2 class="income" id="incomeSummary">₹0</h2>
+                                </div>
+                                <div class="card">
+                                    <h3>Average Income</h3>
+                                    <h2 class="income" id="averageIncome">₹0</h2>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="panel-box">
+                            <h2>Add Income</h2>
+                            <div class="form-grid">
+                                <input type="text" id="incomeLabel" placeholder="Income Source" />
+                                <input type="number" id="incomeAmount" placeholder="Amount" />
+                                <input type="date" id="incomeDate" />
+                            </div>
+                            <button class="add-btn" onclick="addIncomeEntry()">Save Income</button>
+                        </div>
+
+                        <div class="panel-box">
+                            <h2>Income Entries</h2>
+                            <div class="table-wrap">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Source</th>
+                                            <th>Amount</th>
+                                            <th>Date</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="incomeList"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="section-expense" class="content-section hidden">
+                        <div class="panel-box">
+                            <h2>Expense Overview</h2>
+                            <div class="summary-grid">
+                                <div class="card">
+                                    <h3>Expense This Month</h3>
+                                    <h2 class="expense" id="expenseSummary">₹0</h2>
+                                </div>
+                                <div class="card">
+                                    <h3>Top Category</h3>
+                                    <h2 class="expense" id="topExpenseCategory">-</h2>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="panel-box">
+                            <h2>Add Expense</h2>
+                            <div class="form-grid">
+                                <input type="text" id="expenseLabel" placeholder="Expense Description" />
+                                <input type="number" id="expenseAmount" placeholder="Amount" />
+                                <select id="expenseCategory">
+                                    <option value="Food">Food</option>
+                                    <option value="Travel">Travel</option>
+                                    <option value="Shopping">Shopping</option>
+                                    <option value="Bills">Bills</option>
+                                    <option value="Education">Education</option>
+                                    <option value="Entertainment">Entertainment</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                                <input type="date" id="expenseDate" />
+                            </div>
+                            <button class="add-btn" onclick="addExpenseEntry()">Save Expense</button>
+                        </div>
+
+                        <div class="panel-box">
+                            <h2>Expense Entries</h2>
+                            <div class="table-wrap">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Description</th>
+                                            <th>Category</th>
+                                            <th>Amount</th>
+                                            <th>Date</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="expenseList"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="section-transfers" class="content-section hidden">
+                        <div class="panel-box">
+                            <h2>Transfer Center</h2>
+                            <div class="form-grid">
+                                <input type="text" id="transferFrom" placeholder="From Account" value="Main Account" />
+                                <input type="text" id="transferTo" placeholder="To Account" value="Savings" />
+                                <input type="number" id="transferAmount" placeholder="Amount" />
+                                <input type="date" id="transferDate" />
+                            </div>
+                            <button class="add-btn" onclick="addTransfer()">Transfer Now</button>
+                        </div>
+
+                        <div class="panel-box">
+                            <h2>Recent Transfers</h2>
+                            <div class="table-wrap">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>From</th>
+                                            <th>To</th>
+                                            <th>Amount</th>
+                                            <th>Date</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="transferList"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="section-history" class="content-section hidden">
+                        <div class="transaction-section">
+                            <h2>Transaction History</h2>
+                            <div class="table-wrap">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Description</th>
+                                            <th>Category</th>
+                                            <th>Type</th>
+                                            <th>Amount</th>
+                                            <th>Date</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="transactionList"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="section-savings" class="content-section hidden">
+                        <div class="panel-box">
+                            <h2>Savings Goals</h2>
+                            <div class="form-grid">
+                                <input type="text" id="savingName" placeholder="Goal Name" />
+                                <input type="number" id="savingTarget" placeholder="Target Amount" />
+                                <input type="number" id="savingCurrent" placeholder="Current Saved" />
+                            </div>
+                            <button class="add-btn" onclick="addSavingsGoal()">Add Goal</button>
+                        </div>
+
+                        <div class="panel-box">
+                            <h2>Active Savings</h2>
+                            <div id="savingsList"></div>
+                        </div>
+                    </div>
+
+                    <div id="section-budgets" class="content-section hidden">
+                        <div class="panel-box">
+                            <h2>Budgets</h2>
+                            <div class="form-grid">
+                                <select id="budgetCategory">
+                                    <option value="Food">Food</option>
+                                    <option value="Travel">Travel</option>
+                                    <option value="Shopping">Shopping</option>
+                                    <option value="Bills">Bills</option>
+                                    <option value="Education">Education</option>
+                                    <option value="Entertainment">Entertainment</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                                <input type="number" id="budgetLimit" placeholder="Monthly Limit" />
+                            </div>
+                            <button class="add-btn" onclick="addBudget()">Add Budget</button>
+                        </div>
+
+                        <div class="panel-box">
+                            <h2>Budget Progress</h2>
+                            <div id="budgetList"></div>
+                        </div>
+                    </div>
+
+                    <div id="section-reports" class="content-section hidden">
+                        <div class="summary-grid">
+                            <div class="card">
+                                <h3>Net Balance</h3>
+                                <h2 class="balance" id="netBalanceReport">₹0</h2>
+                            </div>
+                            <div class="card">
+                                <h3>Monthly Savings</h3>
+                                <h2 class="income" id="monthlySavingsReport">₹0</h2>
+                            </div>
+                        </div>
+
+                        <div class="stats-list">
+                            <div class="mini-card">
+                                <h4>Income</h4>
+                                <p id="reportIncomeValue">₹0</p>
+                            </div>
+                            <div class="mini-card">
+                                <h4>Expense</h4>
+                                <p id="reportExpenseValue">₹0</p>
+                            </div>
+                            <div class="mini-card">
+                                <h4>Transfers</h4>
+                                <p id="reportTransferValue">₹0</p>
+                            </div>
+                            <div class="mini-card">
+                                <h4>Saved Goals</h4>
+                                <p id="reportSavingsValue">₹0</p>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const STORAGE_KEYS = {
+            users: "expenseUsers",
+            currentUser: "expenseCurrentUser"
+        };
+
+        const users = JSON.parse(localStorage.getItem(STORAGE_KEYS.users)) || [];
+        let currentUser = JSON.parse(localStorage.getItem(STORAGE_KEYS.currentUser));
+        let financeData = {
+            transactions: [],
+            transfers: [],
+            savings: [],
+            budgets: []
+        };
+
+        function saveUsers() {
+            localStorage.setItem(STORAGE_KEYS.users, JSON.stringify(users));
+        }
+
+        function getFinanceKey() {
+            return currentUser ? `expenseTrackerData_${currentUser.email}` : "";
+        }
+
+        function createDemoData() {
+            return {
+                transactions: [
+                    { id: 1, description: "Salary", amount: 5000, type: "income", category: "Salary", date: "2026-09-01" },
+                    { id: 2, description: "Rent", amount: 1200, type: "expense", category: "Bills", date: "2026-09-02" },
+                    { id: 3, description: "Groceries", amount: 420, type: "expense", category: "Food", date: "2026-09-05" },
+                    { id: 4, description: "Freelance Project", amount: 700, type: "income", category: "Salary", date: "2026-09-10" }
+                ],
+                transfers: [
+                    { id: 1, from: "Main Account", to: "Savings", amount: 400, date: "2026-09-06" },
+                    { id: 2, from: "Main Account", to: "Travel Wallet", amount: 250, date: "2026-09-12" }
+                ],
+                savings: [
+                    { id: 1, name: "Emergency Fund", target: 20000, saved: 12500 },
+                    { id: 2, name: "Vacation", target: 8000, saved: 4300 }
+                ],
+                budgets: [
+                    { id: 1, category: "Food", limit: 1200, spent: 890 },
+                    { id: 2, category: "Travel", limit: 800, spent: 420 },
+                    { id: 3, category: "Bills", limit: 1500, spent: 1200 }
+                ]
+            };
+        }
+
+        function loadFinanceState() {
+            if (!currentUser) {
+                financeData = { transactions: [], transfers: [], savings: [], budgets: [] };
+                return;
+            }
+
+            const key = getFinanceKey();
+            const data = JSON.parse(localStorage.getItem(key));
+
+            if (!data) {
+                const demo = createDemoData();
+                localStorage.setItem(key, JSON.stringify(demo));
+                financeData = demo;
+                return;
+            }
+
+            financeData = data;
+        }
+
+        function saveFinanceState() {
+            if (!currentUser) return;
+            localStorage.setItem(getFinanceKey(), JSON.stringify(financeData));
+        }
+
+        function setAuthMode(mode) {
+            const isLogin = mode === "login";
+            const isSignup = mode === "signup";
+            const isReset = mode === "reset";
+
+            document.getElementById("loginFormWrap").classList.toggle("active", isLogin);
+            document.getElementById("signupFormWrap").classList.toggle("active", isSignup);
+            document.getElementById("resetFormWrap").classList.toggle("active", isReset);
+
+            document.getElementById("showLoginBtn").classList.toggle("active", isLogin);
+            document.getElementById("showSignupBtn").classList.toggle("active", isSignup);
+        }
+
+        function updateProfilePanel() {
+            const profilePanel = document.getElementById("profilePanel");
+            if (!currentUser) {
+                profilePanel.classList.add("hidden");
+                return;
+            }
+
+            document.getElementById("profileName").textContent = currentUser.name || "-";
+            document.getElementById("profileEmail").textContent = currentUser.email || "-";
+            document.getElementById("profileUsername").textContent = currentUser.username || "-";
+            document.getElementById("profilePhone").textContent = currentUser.phone || "-";
+            document.getElementById("profileJoined").textContent = currentUser.joinedAt
+                ? new Date(currentUser.joinedAt).toLocaleDateString()
+                : "-";
+        }
+
+        function renderAppState() {
+            const loggedIn = !!currentUser;
+            document.getElementById("authScreen").classList.toggle("hidden", loggedIn);
+            document.getElementById("appScreen").classList.toggle("hidden", !loggedIn);
+            document.getElementById("userMenu").classList.toggle("hidden", !loggedIn);
+            document.getElementById("showLoginBtn").classList.toggle("hidden", loggedIn);
+            document.getElementById("showSignupBtn").classList.toggle("hidden", loggedIn);
+
+            if (loggedIn) {
+                document.getElementById("welcomeName").textContent = currentUser.name.split(" ")[0];
+                updateProfilePanel();
+                renderAll();
+            } else {
+                document.getElementById("profilePanel").classList.add("hidden");
+            }
+        }
+
+        function showSection(sectionName) {
+            document.querySelectorAll(".sidebar-btn").forEach(function(button) {
+                button.classList.toggle("active", button.dataset.section === sectionName);
+            });
+
+            document.querySelectorAll(".content-section").forEach(function(section) {
+                const visible = section.id === `section-${sectionName}`;
+                section.classList.toggle("hidden", !visible);
+            });
+        }
+
+        function registerUser(event) {
+            event.preventDefault();
+
+            const name = document.getElementById("signupName").value.trim();
+            const username = document.getElementById("signupUsername").value.trim();
+            const email = document.getElementById("signupEmail").value.trim().toLowerCase();
+            const phone = document.getElementById("signupPhone").value.trim();
+            const password = document.getElementById("signupPassword").value.trim();
+
+            if (!name || !username || !email || !phone || !password) {
+                alert("Please fill all sign-up fields!");
+                return;
+            }
+
+            if (users.some(user => user.email === email)) {
+                alert("An account with this email already exists.");
+                return;
+            }
+
+            const newUser = {
+                name,
+                username,
+                email,
+                phone,
+                password,
+                joinedAt: new Date().toISOString()
+            };
+
+            users.push(newUser);
+            saveUsers();
+            document.getElementById("signupForm").reset();
+            setAuthMode("login");
+            alert("Account created successfully. Please log in.");
+        }
+
+        function resetPassword(event) {
+            event.preventDefault();
+
+            const email = document.getElementById("resetEmail").value.trim().toLowerCase();
+            const newPassword = document.getElementById("resetPassword").value.trim();
+
+            if (!email || !newPassword) {
+                alert("Please enter your email and a new password.");
+                return;
+            }
+
+            const userIndex = users.findIndex(user => user.email === email);
+
+            if (userIndex === -1) {
+                alert("No account found with that email.");
+                return;
+            }
+
+            users[userIndex].password = newPassword;
+            saveUsers();
+            document.getElementById("resetForm").reset();
+            setAuthMode("login");
+            alert("Password updated successfully. Please log in again.");
+        }
+
+        function loginUser(event) {
+            event.preventDefault();
+
+            const email = document.getElementById("loginEmail").value.trim().toLowerCase();
+            const password = document.getElementById("loginPassword").value.trim();
+
+            const foundUser = users.find(user => user.email === email && user.password === password);
+
+            if (!foundUser) {
+                alert("Invalid email or password.");
+                return;
+            }
+
+            currentUser = foundUser;
+            localStorage.setItem(STORAGE_KEYS.currentUser, JSON.stringify(currentUser));
+            loadFinanceState();
+            renderAppState();
+            showSection("dashboard");
+            document.getElementById("loginForm").reset();
+        }
+
+        function logoutUser() {
+            currentUser = null;
+            localStorage.removeItem(STORAGE_KEYS.currentUser);
+            document.getElementById("profilePanel").classList.add("hidden");
+            renderAppState();
+            setAuthMode("login");
+        }
+
+        function addTransaction() {
+            if (!currentUser) {
+                alert("Please log in to add transactions.");
+                return;
+            }
+
+            const description = document.getElementById("description").value.trim();
+            const amount = document.getElementById("amount").value;
+            const type = document.getElementById("type").value;
+            const category = document.getElementById("category").value;
+            const date = document.getElementById("date").value;
+
+            if (!description || !amount || !date) {
+                alert("Please fill all fields!");
+                return;
+            }
+
+            financeData.transactions.push({
+                id: Date.now(),
+                description,
+                amount: Number(amount),
+                type,
+                category,
+                date
+            });
+
+            saveFinanceState();
+            document.getElementById("description").value = "";
+            document.getElementById("amount").value = "";
+            document.getElementById("date").value = "";
+            renderAll();
+        }
+
+        function deleteTransaction(id) {
+            financeData.transactions = financeData.transactions.filter(transaction => transaction.id !== id);
+            saveFinanceState();
+            renderAll();
+        }
+
+        function addIncomeEntry() {
+            const label = document.getElementById("incomeLabel").value.trim();
+            const amount = Number(document.getElementById("incomeAmount").value);
+            const date = document.getElementById("incomeDate").value;
+
+            if (!label || !amount || !date) {
+                alert("Please enter income source, amount, and date.");
+                return;
+            }
+
+            financeData.transactions.push({
+                id: Date.now(),
+                description: label,
+                amount,
+                type: "income",
+                category: "Salary",
+                date
+            });
+
+            saveFinanceState();
+            document.getElementById("incomeLabel").value = "";
+            document.getElementById("incomeAmount").value = "";
+            document.getElementById("incomeDate").value = "";
+            renderAll();
+        }
+
+        function addExpenseEntry() {
+            const label = document.getElementById("expenseLabel").value.trim();
+            const amount = Number(document.getElementById("expenseAmount").value);
+            const category = document.getElementById("expenseCategory").value;
+            const date = document.getElementById("expenseDate").value;
+
+            if (!label || !amount || !date) {
+                alert("Please enter expense details.");
+                return;
+            }
+
+            financeData.transactions.push({
+                id: Date.now(),
+                description: label,
+                amount,
+                type: "expense",
+                category,
+                date
+            });
+
+            saveFinanceState();
+            document.getElementById("expenseLabel").value = "";
+            document.getElementById("expenseAmount").value = "";
+            document.getElementById("expenseDate").value = "";
+            renderAll();
+        }
+
+        function addTransfer() {
+            const from = document.getElementById("transferFrom").value.trim() || "Main Account";
+            const to = document.getElementById("transferTo").value.trim() || "Savings";
+            const amount = Number(document.getElementById("transferAmount").value);
+            const date = document.getElementById("transferDate").value;
+
+            if (!amount || !date) {
+                alert("Please enter transfer details.");
+                return;
+            }
+
+            financeData.transfers.push({
+                id: Date.now(),
+                from,
+                to,
+                amount,
+                date
+            });
+
+            saveFinanceState();
+            document.getElementById("transferFrom").value = "Main Account";
+            document.getElementById("transferTo").value = "Savings";
+            document.getElementById("transferAmount").value = "";
+            document.getElementById("transferDate").value = "";
+            renderAll();
+        }
+
+        function deleteTransfer(id) {
+            financeData.transfers = financeData.transfers.filter(item => item.id !== id);
+            saveFinanceState();
+            renderAll();
+        }
+
+        function addSavingsGoal() {
+            const name = document.getElementById("savingName").value.trim();
+            const target = Number(document.getElementById("savingTarget").value);
+            const saved = Number(document.getElementById("savingCurrent").value) || 0;
+
+            if (!name || !target) {
+                alert("Please fill goal name and target amount.");
+                return;
+            }
+
+            financeData.savings.push({
+                id: Date.now(),
+                name,
+                target,
+                saved
+            });
+
+            saveFinanceState();
+            document.getElementById("savingName").value = "";
+            document.getElementById("savingTarget").value = "";
+            document.getElementById("savingCurrent").value = "";
+            renderAll();
+        }
+
+        function deleteSavingsGoal(id) {
+            financeData.savings = financeData.savings.filter(item => item.id !== id);
+            saveFinanceState();
+            renderAll();
+        }
+
+        function addBudget() {
+            const category = document.getElementById("budgetCategory").value;
+            const limit = Number(document.getElementById("budgetLimit").value);
+
+            if (!limit) {
+                alert("Please enter a valid budget amount.");
+                return;
+            }
+
+            const spent = financeData.transactions
+                .filter(t => t.type === "expense" && t.category === category)
+                .reduce((sum, item) => sum + item.amount, 0);
+
+            financeData.budgets.push({
+                id: Date.now(),
+                category,
+                limit,
+                spent
+            });
+
+            saveFinanceState();
+            document.getElementById("budgetLimit").value = "";
+            renderAll();
+        }
+
+        function deleteBudget(id) {
+            financeData.budgets = financeData.budgets.filter(item => item.id !== id);
+            saveFinanceState();
+            renderAll();
+        }
+
+        function renderDashboard() {
+            const income = financeData.transactions.filter(t => t.type === "income").reduce((sum, item) => sum + item.amount, 0);
+            const expense = financeData.transactions.filter(t => t.type === "expense").reduce((sum, item) => sum + item.amount, 0);
+
+            document.getElementById("totalIncome").textContent = "₹" + income;
+            document.getElementById("totalExpense").textContent = "₹" + expense;
+            document.getElementById("balance").textContent = "₹" + (income - expense);
+
+            renderTransactionHistory();
+        }
+
+        function renderTransactionHistory() {
+            const tableBody = document.getElementById("transactionList");
+            if (!tableBody) return;
+
+            tableBody.innerHTML = "";
+
+            financeData.transactions.forEach(function(transaction) {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${transaction.description}</td>
+                    <td>${transaction.category}</td>
+                    <td class="${transaction.type}-row">${transaction.type}</td>
+                    <td class="${transaction.type}-row">₹${transaction.amount}</td>
+                    <td>${transaction.date}</td>
+                    <td>
+                        <button class="delete-btn" onclick="deleteTransaction(${transaction.id})">Delete</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function renderIncomeSection() {
+            const incomeTransactions = financeData.transactions.filter(t => t.type === "income");
+            const total = incomeTransactions.reduce((sum, item) => sum + item.amount, 0);
+            document.getElementById("incomeSummary").textContent = "₹" + total;
+            document.getElementById("averageIncome").textContent = "₹" + (incomeTransactions.length ? Math.round(total / incomeTransactions.length) : 0);
+
+            const tableBody = document.getElementById("incomeList");
+            if (!tableBody) return;
+
+            tableBody.innerHTML = "";
+
+            incomeTransactions.forEach(function(item) {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${item.description}</td>
+                    <td>₹${item.amount}</td>
+                    <td>${item.date}</td>
+                    <td><button class="delete-btn" onclick="deleteTransaction(${item.id})">Delete</button></td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function renderExpenseSection() {
+            const expenseTransactions = financeData.transactions.filter(t => t.type === "expense");
+            const total = expenseTransactions.reduce((sum, item) => sum + item.amount, 0);
+            document.getElementById("expenseSummary").textContent = "₹" + total;
+
+            const categoryTotals = {};
+            expenseTransactions.forEach(item => {
+                categoryTotals[item.category] = (categoryTotals[item.category] || 0) + item.amount;
+            });
+
+            let topCategory = "-";
+            let topValue = 0;
+            Object.entries(categoryTotals).forEach(([category, amount]) => {
+                if (amount > topValue) {
+                    topCategory = category;
+                    topValue = amount;
+                }
+            });
+            document.getElementById("topExpenseCategory").textContent = topCategory;
+
+            const tableBody = document.getElementById("expenseList");
+            if (!tableBody) return;
+
+            tableBody.innerHTML = "";
+
+            expenseTransactions.forEach(function(item) {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${item.description}</td>
+                    <td>${item.category}</td>
+                    <td>₹${item.amount}</td>
+                    <td>${item.date}</td>
+                    <td><button class="delete-btn" onclick="deleteTransaction(${item.id})">Delete</button></td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function renderTransfersSection() {
+            const tableBody = document.getElementById("transferList");
+            if (!tableBody) return;
+
+            tableBody.innerHTML = "";
+
+            financeData.transfers.forEach(function(item) {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${item.from}</td>
+                    <td>${item.to}</td>
+                    <td>₹${item.amount}</td>
+                    <td>${item.date}</td>
+                    <td><button class="delete-btn" onclick="deleteTransfer(${item.id})">Delete</button></td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function renderSavingsSection() {
+            const container = document.getElementById("savingsList");
+            if (!container) return;
+
+            container.innerHTML = "";
+
+            financeData.savings.forEach(function(item) {
+                const progress = Math.min(100, Math.round((item.saved / item.target) * 100));
+                const box = document.createElement("div");
+                box.className = "panel-box";
+                box.innerHTML = `
+                    <h3>${item.name}</h3>
+                    <p>Saved: ₹${item.saved} / ₹${item.target}</p>
+                    <div class="progress-box">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width:${progress}%"></div>
+                        </div>
+                    </div>
+                    <div class="inline-actions">
+                        <button class="delete-btn" onclick="deleteSavingsGoal(${item.id})">Delete</button>
+                    </div>
+                `;
+                container.appendChild(box);
+            });
+        }
+
+        function renderBudgetsSection() {
+            const container = document.getElementById("budgetList");
+            if (!container) return;
+
+            container.innerHTML = "";
+
+            financeData.budgets.forEach(function(item) {
+                const progress = Math.min(100, Math.round((item.spent / item.limit) * 100));
+                const card = document.createElement("div");
+                card.className = "panel-box";
+                card.innerHTML = `
+                    <h3>${item.category}</h3>
+                    <p>Spent: ₹${item.spent} / ₹${item.limit}</p>
+                    <div class="progress-box">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width:${progress}%"></div>
+                        </div>
+                    </div>
+                    <div class="inline-actions">
+                        <button class="delete-btn" onclick="deleteBudget(${item.id})">Delete</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function renderReports() {
+            const totalIncome = financeData.transactions.filter(t => t.type === "income").reduce((sum, item) => sum + item.amount, 0);
+            const totalExpense = financeData.transactions.filter(t => t.type === "expense").reduce((sum, item) => sum + item.amount, 0);
+            const totalTransfers = financeData.transfers.reduce((sum, item) => sum + item.amount, 0);
+            const totalSavings = financeData.savings.reduce((sum, item) => sum + item.saved, 0);
+
+            document.getElementById("netBalanceReport").textContent = "₹" + (totalIncome - totalExpense);
+            document.getElementById("monthlySavingsReport").textContent = "₹" + (totalIncome - totalExpense - totalTransfers);
+            document.getElementById("reportIncomeValue").textContent = "₹" + totalIncome;
+            document.getElementById("reportExpenseValue").textContent = "₹" + totalExpense;
+            document.getElementById("reportTransferValue").textContent = "₹" + totalTransfers;
+            document.getElementById("reportSavingsValue").textContent = "₹" + totalSavings;
+        }
+
+        function renderAll() {
+            renderDashboard();
+            renderIncomeSection();
+            renderExpenseSection();
+            renderTransfersSection();
+            renderSavingsSection();
+            renderBudgetsSection();
+            renderReports();
+        }
+
+        document.querySelectorAll(".sidebar-btn").forEach(function(button) {
+            button.addEventListener("click", function() {
+                showSection(button.dataset.section);
+            });
+        });
+
+        document.getElementById("showLoginBtn").addEventListener("click", function() {
+            setAuthMode("login");
+        });
+
+        document.getElementById("showSignupBtn").addEventListener("click", function() {
+            setAuthMode("signup");
+        });
+
+        document.querySelectorAll("[data-mode]").forEach(function(button) {
+            button.addEventListener("click", function() {
+                setAuthMode(button.dataset.mode);
+            });
+        });
+
+        document.getElementById("signupForm").addEventListener("submit", registerUser);
+        document.getElementById("resetForm").addEventListener("submit", resetPassword);
+        document.getElementById("loginForm").addEventListener("submit", loginUser);
+        document.getElementById("logoutBtn").addEventListener("click", logoutUser);
+        document.getElementById("profileToggle").addEventListener("click", function() {
+            document.getElementById("profilePanel").classList.toggle("hidden");
+        });
+
+        if (currentUser) {
+            loadFinanceState();
+        }
+
+        renderAppState();
+        setAuthMode("login");
+    </script>
+</body>
+</html>
